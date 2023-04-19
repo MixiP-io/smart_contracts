@@ -62,14 +62,16 @@ impl PaymentContractTest {
 }
 
 #[test]
-fn test_successful_contract_initialize() {
+fn test_successful_contract_initialize_and_sign() {
     let test = PaymentContractTest::setup();
 
-    create_payment_contract(
+    let payment_contract = create_payment_contract(
         &test.env,
         &test.payment_contract_info,
         &test.creator_address,
     );
+
+    payment_contract.sign_contract(&1681977600);
 }
 
 #[test]
@@ -82,4 +84,19 @@ fn test_initialize_an_already_initialized_payment_contract() {
         &test.creator_address,
     );
     payment_contract.initialize(&test.payment_contract_info, &test.creator_address);
+}
+
+#[test]
+#[should_panic(expected = "Status(ContractError(2))")]
+fn test_accepting_and_already_accepted_contract() {
+    let test = PaymentContractTest::setup();
+
+    let payment_contract = create_payment_contract(
+        &test.env,
+        &test.payment_contract_info,
+        &test.creator_address,
+    );
+
+    payment_contract.sign_contract(&1681977600);
+    payment_contract.sign_contract(&1681999200);
 }
