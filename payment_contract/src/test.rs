@@ -4,7 +4,7 @@ use crate::{
     payment_contract_info::{ContractManager, ContractType, PaymentContractInfo, PaymentMethod},
     PaymentContract, PaymentContractClient,
 };
-use soroban_sdk::{testutils::Address as _, vec, Address, Bytes, Env, IntoVal, Vec};
+use soroban_sdk::{map, testutils::Address as _, Address, Bytes, Env, IntoVal, Map};
 
 fn create_payment_contract(
     e: &Env,
@@ -21,7 +21,7 @@ struct PaymentContractTest {
     env: Env,
     payment_contract_info: PaymentContractInfo,
     creator_address: Address,
-    asset_ids: Vec<Bytes>,
+    assets: Map<Bytes, Bytes>,
 }
 
 impl PaymentContractTest {
@@ -53,16 +53,16 @@ impl PaymentContractTest {
             scope_of_work: "scope_of_work text".into_val(&env),
             rights_royalties: "rights_royalties text".into_val(&env),
         };
-        let asset_ids: Vec<Bytes> = vec![
+        let assets: Map<Bytes, Bytes> = map![
             &env,
-            "ASSET-ID-1".into_val(&env),
-            "ASSET-ID-2".into_val(&env),
+            ("ASSET-ID-1".into_val(&env), "asset-1-url".into_val(&env)),
+            ("ASSET-ID-2".into_val(&env), "asset-2-url".into_val(&env)),
         ];
         PaymentContractTest {
             env,
             payment_contract_info,
             creator_address,
-            asset_ids,
+            assets,
         }
     }
 }
@@ -78,7 +78,7 @@ fn test_successful_execution_of_wallet_capabilities() {
     );
 
     payment_contract.sign_contract(&1681977600);
-    payment_contract.submit_asset(&test.asset_ids, &1683158399);
+    payment_contract.submit_asset(&test.assets, &1683158399);
 }
 
 #[test]
@@ -119,5 +119,5 @@ fn test_submit_assets_when_contract_not_active() {
         &test.creator_address,
     );
 
-    payment_contract.submit_asset(&test.asset_ids, &1683158399);
+    payment_contract.submit_asset(&test.assets, &1683158399);
 }
