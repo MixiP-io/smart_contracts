@@ -1,7 +1,10 @@
 //! Module PaymentContractInfo
 //!
 //! Module responsible of managing `PaymentContractInfo` and defining its corresponding struct.
-use soroban_sdk::{contracttype, Address, Bytes};
+use crate::storage_types::DataKey;
+use soroban_sdk::{contracttype, Address, Bytes, Env};
+
+const CONTRACT_INFO_KEY: DataKey = DataKey::PaymentContractInfo;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 #[contracttype]
@@ -50,8 +53,16 @@ pub enum ContractType {
 #[derive(Clone, PartialEq, Eq, Debug)]
 #[contracttype]
 pub struct ContractManager {
-    address: Address,
-    name: Bytes,
-    job_position: Bytes,
-    physical_address: Bytes,
+    pub address: Address,
+    pub name: Bytes,
+    pub job_position: Bytes,
+    pub physical_address: Bytes,
+}
+
+pub(crate) fn has_contact_info(env: &Env) -> bool {
+    env.storage().has(&CONTRACT_INFO_KEY)
+}
+
+pub(crate) fn write_contract_info(env: &Env, contract_info: &PaymentContractInfo) {
+    env.storage().set(&CONTRACT_INFO_KEY, contract_info);
 }
