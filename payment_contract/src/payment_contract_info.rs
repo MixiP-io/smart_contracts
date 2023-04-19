@@ -21,7 +21,7 @@ pub struct PaymentContractInfo {
     pub asset_payment_amount: u64,
     /// Contract creation date
     pub creation_date: u64,
-    /// The accorded date to start the contract execution
+    /// The date agreed upon for starting the execution of the contract
     pub start_date: u64,
     /// The last day on which assets could be uploaded
     pub deadline: u64,
@@ -52,6 +52,6 @@ pub enum ContractType {
 pub struct ContractManager {
     address: Address,
     name: Bytes,
-    title: Bytes,
+    job_position: Bytes,
     physical_address: Bytes,
 }
