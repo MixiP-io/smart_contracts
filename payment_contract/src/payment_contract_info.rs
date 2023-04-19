@@ -71,3 +71,13 @@ pub(crate) fn write_contract_info(env: &Env, contract_info: &PaymentContractInfo
 pub(crate) fn write_creator(env: &Env, partner: &Address) {
     env.storage().set(&AUTH_PARTNER_KEY, partner)
 }
+
+pub(crate) fn get_contract_manager(env: &Env) -> Address {
+    let contract_info: PaymentContractInfo =
+        env.storage().get_unchecked(&CONTRACT_INFO_KEY).unwrap();
+    contract_info.contract_manager.address
+}
+
+pub(crate) fn get_creator(env: &Env) -> Address {
+    env.storage().get_unchecked(&AUTH_PARTNER_KEY).unwrap()
+}

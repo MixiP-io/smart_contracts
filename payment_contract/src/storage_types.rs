@@ -10,4 +10,16 @@ pub enum DataKey {
     PaymentContractInfo,
     /// To store the partner that is requested to accept the contract
     AuthorizedPartner,
+    /// To store the date that the contract was accepted by the creator
+    DateOfAcceptance,
+    /// To store the possible current contract states available in `ContractState` enum
+    ContractState,
+}
+
+#[contracttype]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub enum ContractState {
+    Active,
+    Rejected,
+    Finished,
 }
