@@ -5,6 +5,7 @@ use crate::storage_types::DataKey;
 use soroban_sdk::{contracttype, Address, Bytes, Env};
 
 const CONTRACT_INFO_KEY: DataKey = DataKey::PaymentContractInfo;
+const AUTH_PARTNER_KEY: DataKey = DataKey::AuthorizedPartner;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 #[contracttype]
@@ -65,4 +66,8 @@ pub(crate) fn has_contact_info(env: &Env) -> bool {
 
 pub(crate) fn write_contract_info(env: &Env, contract_info: &PaymentContractInfo) {
     env.storage().set(&CONTRACT_INFO_KEY, contract_info);
+}
+
+pub(crate) fn write_creator(env: &Env, partner: &Address) {
+    env.storage().set(&AUTH_PARTNER_KEY, partner)
 }

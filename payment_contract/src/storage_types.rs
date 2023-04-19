@@ -8,4 +8,6 @@ use soroban_sdk::contracttype;
 pub enum DataKey {
     /// Stores all the metadata of the contract as a `PaymentContractInfo` struct
     PaymentContractInfo,
+    /// To store the partner that is requested to accept the contract
+    AuthorizedPartner,
 }

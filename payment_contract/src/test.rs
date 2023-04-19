@@ -9,22 +9,25 @@ use soroban_sdk::{testutils::Address as _, Address, Bytes, Env, IntoVal};
 fn create_payment_contract(
     e: &Env,
     payment_contract_info: &PaymentContractInfo,
+    creator_address: &Address,
 ) -> PaymentContractClient {
     let payment_contract =
         PaymentContractClient::new(e, &e.register_contract(None, PaymentContract {}));
-    payment_contract.initialize(payment_contract_info);
+    payment_contract.initialize(payment_contract_info, creator_address);
     payment_contract
 }
 
 struct PaymentContractTest {
     env: Env,
     payment_contract_info: PaymentContractInfo,
+    creator_address: Address,
 }
 
 impl PaymentContractTest {
     fn setup() -> Self {
         let env: Env = Default::default();
         let contract_manager_address = Address::random(&env);
+        let creator_address = Address::random(&env);
         let company_id: Bytes = "ID-001".into_val(&env);
         let project_id: Bytes = "ID-001".into_val(&env);
         let contract_name: Bytes = "Test Contract Name".into_val(&env);
@@ -53,6 +56,7 @@ impl PaymentContractTest {
         PaymentContractTest {
             env,
             payment_contract_info,
+            creator_address,
         }
     }
 }
@@ -61,13 +65,21 @@ impl PaymentContractTest {
 fn test_successful_contract_initialize() {
     let test = PaymentContractTest::setup();
 
-    create_payment_contract(&test.env, &test.payment_contract_info);
+    create_payment_contract(
+        &test.env,
+        &test.payment_contract_info,
+        &test.creator_address,
+    );
 }
 
 #[test]
 #[should_panic(expected = "Status(ContractError(1))")]
 fn test_initialize_an_already_initialized_payment_contract() {
     let test = PaymentContractTest::setup();
-    let payment_contract = create_payment_contract(&test.env, &test.payment_contract_info);
-    payment_contract.initialize(&test.payment_contract_info);
+    let payment_contract = create_payment_contract(
+        &test.env,
+        &test.payment_contract_info,
+        &test.creator_address,
+    );
+    payment_contract.initialize(&test.payment_contract_info, &test.creator_address);
 }
