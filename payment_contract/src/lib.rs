@@ -27,13 +27,13 @@ impl PaymentContract {
         payment_contract_info::write_creator(&env, &creator)
     }
 
-    pub fn accept_contract(env: Env, date: u64) {
+    pub fn sign_contract(env: Env, date: u64) {
         if is_contract_with_state(&env) {
             panic_with_error!(env, ContractError::AlreadyInProgress)
         }
         let creator = payment_contract_info::get_creator(&env);
         creator.require_auth();
-        metadata::start_contract(&env, &date);
+        metadata::sign_contract(&env, &date);
     }
 }
 

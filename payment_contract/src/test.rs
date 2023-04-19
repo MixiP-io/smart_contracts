@@ -71,7 +71,7 @@ fn test_successful_contract_initialize_and_sign() {
         &test.creator_address,
     );
 
-    payment_contract.accept_contract(&1681977600);
+    payment_contract.sign_contract(&1681977600);
 }
 
 #[test]
@@ -97,6 +97,6 @@ fn test_accepting_and_already_accepted_contract() {
         &test.creator_address,
     );
 
-    payment_contract.accept_contract(&1681977600);
-    payment_contract.accept_contract(&1681999200);
+    payment_contract.sign_contract(&1681977600);
+    payment_contract.sign_contract(&1681999200);
 }
