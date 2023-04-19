@@ -23,7 +23,7 @@ impl PaymentContract {
     }
 
     pub fn update_creator(env: Env, creator: Address) {
-        payment_contract_info::get_contract_manager(&env).require_auth();
+        payment_contract_info::get_contract_manager_address(&env).require_auth();
         payment_contract_info::write_creator(&env, &creator)
     }
 

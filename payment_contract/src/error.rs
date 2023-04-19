@@ -9,6 +9,6 @@ use soroban_sdk::contracterror;
 pub enum ContractError {
     /// Error that indicates the contract was already initialized
     AlreadyInitialized = 1,
-    /// Error that indicates the contract is already accepted, finished or unaccepted for the creator
+    /// Error that indicates the contract is already accepted, finished or rejected for the creator
     AlreadyInProgress = 2,
 }
