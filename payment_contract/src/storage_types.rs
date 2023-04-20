@@ -17,7 +17,7 @@ pub enum DataKey {
     /// To store the creator submitted assets as `Map<Bytes, Asset>`
     CreatorAssets,
     /// To store the fee that Mixip collected from a contract
-    TotalFeeAmount,
+    FeeProfit,
 }
 
 #[contracttype]

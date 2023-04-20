@@ -68,16 +68,16 @@ pub(crate) fn write_assets(env: &Env, assets: &Map<Bytes, Asset>) {
     env.storage().set(&CREATOR_ASSETS_KEY, assets)
 }
 
+pub(crate) fn check_if_has_assets(env: &Env) {
+    if !env.storage().has(&CREATOR_ASSETS_KEY) {
+        panic_with_error!(env, ContractError::AssetsNotFound);
+    }
+}
+
 fn change_asset_state(asset_id: Bytes, assets: &mut Map<Bytes, Asset>) {
     if let Some(asset) = assets.get(asset_id.clone()) {
         let mut asset = asset.unwrap();
         asset.state = AssetState::Approved;
         assets.set(asset_id, asset)
-    }
-}
-
-fn check_if_has_assets(env: &Env) {
-    if !env.storage().has(&CREATOR_ASSETS_KEY) {
-        panic_with_error!(env, ContractError::AssetsNotFound);
     }
 }
