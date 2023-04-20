@@ -13,4 +13,6 @@ pub enum ContractError {
     AlreadyInProgress = 2,
     /// Error that indicates if the contract isn't active
     ContractNotActive = 3,
+    /// Error that indicates if the contract doesn't have submitted assets
+    AssetsNotFound = 4,
 }

@@ -1,6 +1,11 @@
-use soroban_sdk::{contracttype, map, Bytes, Env, Map};
+//! Module Asset
+//!
+//! Module responsible of managing creator submitted Assets and defining its corresponding struct.
+use crate::{error::ContractError, storage_types::DataKey};
 
-use crate::storage_types::DataKey;
+use soroban_sdk::{contracttype, map, panic_with_error, Bytes, Env, Map, Vec};
+
+const CREATOR_ASSETS_KEY: DataKey = DataKey::CreatorAssets;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 #[contracttype]
@@ -20,7 +25,7 @@ pub enum AssetState {
 }
 
 impl Asset {
-    pub fn new(asset_url: Bytes, submission_date: u64) -> Self {
+    fn new(asset_url: Bytes, submission_date: u64) -> Self {
         Asset {
             asset_url,
             submission_date,
@@ -39,7 +44,29 @@ pub(crate) fn store_assets(env: &Env, asset_ids: Map<Bytes, Bytes>, submission_d
     write_assets(env, &assets)
 }
 
-pub(crate) fn write_assets(env: &Env, assets: &Map<Bytes, Asset>) {
-    let key: DataKey = DataKey::CreatorAssets;
-    env.storage().set(&key, assets)
+pub(crate) fn approve_asset(env: &Env, assets_ids: Vec<Bytes>) {
+    check_if_has_assets(env);
+    let mut assets: Map<Bytes, Asset> = env.storage().get_unchecked(&CREATOR_ASSETS_KEY).unwrap();
+    assets_ids
+        .iter()
+        .for_each(|asset_id| change_asset_state(asset_id.unwrap(), &mut assets));
+    write_assets(env, &assets)
+}
+
+fn change_asset_state(asset_id: Bytes, assets: &mut Map<Bytes, Asset>) {
+    if let Some(asset) = assets.get(asset_id.clone()) {
+        let mut asset = asset.unwrap();
+        asset.state = AssetState::Approved;
+        assets.set(asset_id, asset)
+    }
+}
+
+fn write_assets(env: &Env, assets: &Map<Bytes, Asset>) {
+    env.storage().set(&CREATOR_ASSETS_KEY, assets)
+}
+
+fn check_if_has_assets(env: &Env) {
+    if !env.storage().has(&CREATOR_ASSETS_KEY) {
+        panic_with_error!(env, ContractError::AssetsNotFound);
+    }
 }
