@@ -2,7 +2,7 @@
 //!
 //! Module responsible of managing `PaymentContractInfo` and defining its corresponding struct.
 use crate::storage_types::DataKey;
-use soroban_sdk::{contracttype, Address, Bytes, Env};
+use soroban_sdk::{contracttype, Address, Bytes, BytesN, Env};
 
 const CONTRACT_INFO_KEY: DataKey = DataKey::PaymentContractInfo;
 const AUTH_PARTNER_KEY: DataKey = DataKey::AuthorizedPartner;
@@ -22,7 +22,7 @@ pub struct PaymentContractInfo {
     /// The way the payment will be executed (only native (xlm) for now)
     pub payment_method: PaymentMethod,
     /// The payment amount for each approved asset
-    pub asset_payment_amount: u64,
+    pub asset_payment_amount: i128,
     /// Contract creation date
     pub creation_date: u64,
     /// The date agreed upon for starting the execution of the contract
@@ -40,7 +40,7 @@ pub struct PaymentContractInfo {
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub enum PaymentMethod {
     /// XLM
-    Native,
+    Native(BytesN<32>),
 }
 
 #[contracttype]
@@ -80,4 +80,28 @@ pub(crate) fn get_contract_manager_address(env: &Env) -> Address {
 
 pub(crate) fn get_creator(env: &Env) -> Address {
     env.storage().get_unchecked(&AUTH_PARTNER_KEY).unwrap()
+}
+
+pub(crate) fn get_payment_date(env: &Env) -> u64 {
+    let contract_info: PaymentContractInfo =
+        env.storage().get_unchecked(&CONTRACT_INFO_KEY).unwrap();
+    contract_info.deadline + contract_info.payment_time
+}
+
+pub(crate) fn get_payment_time(env: &Env) -> u64 {
+    let contract_info: PaymentContractInfo =
+        env.storage().get_unchecked(&CONTRACT_INFO_KEY).unwrap();
+    contract_info.payment_time
+}
+
+pub(crate) fn get_payment_method(env: &Env) -> PaymentMethod {
+    let contract_info: PaymentContractInfo =
+        env.storage().get_unchecked(&CONTRACT_INFO_KEY).unwrap();
+    contract_info.payment_method
+}
+
+pub(crate) fn get_asset_payment_amount(env: &Env) -> i128 {
+    let contract_info: PaymentContractInfo =
+        env.storage().get_unchecked(&CONTRACT_INFO_KEY).unwrap();
+    contract_info.asset_payment_amount
 }

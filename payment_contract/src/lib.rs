@@ -3,6 +3,7 @@
 mod asset;
 mod error;
 mod metadata;
+mod payment;
 mod payment_contract_info;
 mod storage_types;
 
@@ -46,9 +47,13 @@ impl PaymentContract {
         asset::store_assets(&env, assets, submission_date)
     }
 
-    pub fn approve_asset(env: Env, asset_ids: Vec<Bytes>) {
+    pub fn approve_asset(env: Env, asset_ids: Vec<Bytes>, date: u64) {
         payment_contract_info::get_contract_manager_address(&env).require_auth();
-        asset::approve_asset(&env, asset_ids);
+        asset::approve_asset(&env, asset_ids, &date);
+    }
+
+    pub fn execute_payment(env: Env, date: u64, prepayment_source: Option<Address>) {
+        payment::execute_payment(&env, &date, &prepayment_source)
     }
 }
 
