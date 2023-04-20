@@ -14,6 +14,8 @@ pub enum DataKey {
     DateOfAcceptance,
     /// To store the possible current contract states available in `ContractState` enum
     ContractState,
+    /// To store the creator submitted assets as `Map<Bytes, Asset>`
+    CreatorAssets,
 }
 
 #[contracttype]

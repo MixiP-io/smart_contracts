@@ -11,4 +11,6 @@ pub enum ContractError {
     AlreadyInitialized = 1,
     /// Error that indicates the contract is already accepted, finished or rejected for the creator
     AlreadyInProgress = 2,
+    /// Error that indicates if the contract isn't active
+    ContractNotActive = 3,
 }

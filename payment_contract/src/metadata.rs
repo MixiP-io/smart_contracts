@@ -15,3 +15,11 @@ pub fn is_contract_with_state(env: &Env) -> bool {
     let state_key = DataKey::ContractState;
     env.storage().has(&state_key)
 }
+
+pub fn is_contract_active(env: &Env) -> bool {
+    let state_key = DataKey::ContractState;
+    match env.storage().get(&state_key) {
+        Some(state) => matches!(state.unwrap(), ContractState::Active),
+        None => false,
+    }
+}
