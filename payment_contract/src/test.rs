@@ -79,6 +79,7 @@ fn test_successful_execution_of_wallet_capabilities() {
 
     payment_contract.sign_contract(&1681977600);
     payment_contract.submit_asset(&test.assets, &1683158399);
+    payment_contract.approve_asset(&test.assets.keys());
 }
 
 #[test]
@@ -120,4 +121,19 @@ fn test_submit_assets_when_contract_not_active() {
     );
 
     payment_contract.submit_asset(&test.assets, &1683158399);
+}
+
+#[test]
+#[should_panic(expected = "Status(ContractError(4))")]
+fn test_approve_assets_when_no_assets_in_contract() {
+    let test = PaymentContractTest::setup();
+
+    let payment_contract = create_payment_contract(
+        &test.env,
+        &test.payment_contract_info,
+        &test.creator_address,
+    );
+
+    payment_contract.sign_contract(&1681977600);
+    payment_contract.approve_asset(&test.assets.keys());
 }

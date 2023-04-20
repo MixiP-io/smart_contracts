@@ -9,7 +9,7 @@ mod storage_types;
 use error::ContractError;
 use metadata::{is_contract_active, is_contract_with_state};
 use payment_contract_info::{has_contact_info, PaymentContractInfo};
-use soroban_sdk::{contractimpl, panic_with_error, Address, Bytes, Env, Map};
+use soroban_sdk::{contractimpl, panic_with_error, Address, Bytes, Env, Map, Vec};
 
 pub struct PaymentContract;
 
@@ -44,6 +44,11 @@ impl PaymentContract {
         let creator = payment_contract_info::get_creator(&env);
         creator.require_auth();
         asset::store_assets(&env, assets, submission_date)
+    }
+
+    pub fn approve_asset(env: Env, asset_ids: Vec<Bytes>) {
+        payment_contract_info::get_contract_manager_address(&env).require_auth();
+        asset::approve_asset(&env, asset_ids);
     }
 }
 
