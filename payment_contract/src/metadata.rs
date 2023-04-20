@@ -23,3 +23,12 @@ pub fn is_contract_active(env: &Env) -> bool {
         None => false,
     }
 }
+
+pub(crate) fn update_fee(env: &Env, amount: &i128) {
+    let fee_key = DataKey::TotalFeeAmount;
+    let fee: i128 = match env.storage().get(&fee_key) {
+        Some(fee) => fee.unwrap(),
+        None => 0,
+    };
+    env.storage().set(&fee_key, &(fee + amount))
+}

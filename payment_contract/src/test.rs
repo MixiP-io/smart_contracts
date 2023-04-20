@@ -1,10 +1,25 @@
 #![cfg(test)]
 
+extern crate std;
+
 use crate::{
     payment_contract_info::{ContractManager, ContractType, PaymentContractInfo, PaymentMethod},
     PaymentContract, PaymentContractClient,
 };
-use soroban_sdk::{map, testutils::Address as _, Address, Bytes, Env, IntoVal, Map};
+use soroban_sdk::{map, testutils::Address as _, Address, Bytes, BytesN, Env, IntoVal, Map};
+
+mod token_contract {
+    soroban_sdk::contractimport!(file = "../soroban_token_spec.wasm");
+}
+
+fn create_and_init_token_contract(
+    env: &Env,
+    admin_id: &Address,
+) -> (BytesN<32>, token_contract::Client) {
+    let id = env.register_stellar_asset_contract(admin_id.clone());
+    let token = token_contract::Client::new(env, &id);
+    (id, token)
+}
 
 fn create_payment_contract(
     e: &Env,
@@ -22,28 +37,32 @@ struct PaymentContractTest {
     payment_contract_info: PaymentContractInfo,
     creator_address: Address,
     assets: Map<Bytes, Bytes>,
+    token_client: token_contract::Client,
 }
 
 impl PaymentContractTest {
     fn setup() -> Self {
         let env: Env = Default::default();
+        let token_admin = Address::random(&env);
         let contract_manager_address = Address::random(&env);
         let creator_address = Address::random(&env);
         let company_id: Bytes = "ID-001".into_val(&env);
         let project_id: Bytes = "ID-001".into_val(&env);
         let contract_name: Bytes = "Test Contract Name".into_val(&env);
         let contract_manager: ContractManager = ContractManager {
-            address: contract_manager_address,
+            address: contract_manager_address.clone(),
             name: "John Doe".into_val(&env),
             job_position: "Product owner".into_val(&env),
             physical_address: "Some address".into_val(&env),
         };
+        let (token_id, token_client) = create_and_init_token_contract(&env, &token_admin);
+        token_client.mint(&token_admin, &contract_manager_address, &1000_i128);
         let payment_contract_info = PaymentContractInfo {
             contract_manager,
             company_id,
             project_id,
             contract_name,
-            payment_method: PaymentMethod::Native,
+            payment_method: PaymentMethod::Native(token_id),
             asset_payment_amount: 5,
             creation_date: 1681917160,
             deadline: 1684546903,
@@ -63,12 +82,13 @@ impl PaymentContractTest {
             payment_contract_info,
             creator_address,
             assets,
+            token_client,
         }
     }
 }
 
 #[test]
-fn test_successful_execution_of_wallet_capabilities() {
+fn test_successful_execution_of_wallet_capabilities_upon_approval() {
     let test = PaymentContractTest::setup();
 
     let payment_contract = create_payment_contract(
@@ -79,7 +99,42 @@ fn test_successful_execution_of_wallet_capabilities() {
 
     payment_contract.sign_contract(&1681977600);
     payment_contract.submit_asset(&test.assets, &1683158399);
-    payment_contract.approve_asset(&test.assets.keys());
+    payment_contract.approve_asset(&test.assets.keys(), &1677953357);
+    assert_eq!(test.token_client.balance(&test.creator_address), 10);
+}
+
+#[test]
+fn test_successful_execution_of_wallet_capabilities_with_payment_time() {
+    let test = PaymentContractTest::setup();
+    let mut payment_contract_info = test.payment_contract_info.clone();
+    payment_contract_info.payment_time = 2629743_u64;
+    let contract_manager_address = test.payment_contract_info.contract_manager.address.clone();
+    let payment_date = payment_contract_info.deadline + payment_contract_info.payment_time;
+    let payment_contract =
+        create_payment_contract(&test.env, &payment_contract_info, &test.creator_address);
+
+    payment_contract.sign_contract(&1681977600);
+    payment_contract.submit_asset(&test.assets, &1683158399);
+    payment_contract.approve_asset(&test.assets.keys(), &1677953357);
+    payment_contract.execute_payment(&payment_date, &Option::Some(contract_manager_address));
+    assert_eq!(test.token_client.balance(&test.creator_address), 10);
+}
+
+#[test]
+fn test_successful_execution_of_wallet_capabilities_on_prepayment() {
+    let test = PaymentContractTest::setup();
+    let mut payment_contract_info = test.payment_contract_info.clone();
+    payment_contract_info.payment_time = 2629743_u64;
+    let contract_manager_address = test.payment_contract_info.contract_manager.address.clone();
+    let payment_date = payment_contract_info.deadline + 604800_u64;
+    let payment_contract =
+        create_payment_contract(&test.env, &payment_contract_info, &test.creator_address);
+
+    payment_contract.sign_contract(&1681977600);
+    payment_contract.submit_asset(&test.assets, &1683158399);
+    payment_contract.approve_asset(&test.assets.keys(), &1677953357);
+    payment_contract.execute_payment(&payment_date, &Option::Some(contract_manager_address));
+    assert_eq!(test.token_client.balance(&test.creator_address), 9);
 }
 
 #[test]
@@ -135,5 +190,21 @@ fn test_approve_assets_when_no_assets_in_contract() {
     );
 
     payment_contract.sign_contract(&1681977600);
-    payment_contract.approve_asset(&test.assets.keys());
+    payment_contract.approve_asset(&test.assets.keys(), &1677953357);
+}
+
+#[test]
+#[should_panic(expected = "Status(ContractError(5))")]
+fn test_execute_payment_when_no_approved_assets() {
+    let test = PaymentContractTest::setup();
+    let mut payment_contract_info = test.payment_contract_info.clone();
+    payment_contract_info.payment_time = 2629743_u64;
+    let contract_manager_address = test.payment_contract_info.contract_manager.address.clone();
+    let payment_date = payment_contract_info.deadline + payment_contract_info.payment_time;
+    let payment_contract =
+        create_payment_contract(&test.env, &payment_contract_info, &test.creator_address);
+
+    payment_contract.sign_contract(&1681977600);
+    payment_contract.submit_asset(&test.assets, &1683158399);
+    payment_contract.execute_payment(&payment_date, &Option::Some(contract_manager_address));
 }

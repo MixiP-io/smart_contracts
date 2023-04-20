@@ -15,4 +15,6 @@ pub enum ContractError {
     ContractNotActive = 3,
     /// Error that indicates if the contract doesn't have submitted assets
     AssetsNotFound = 4,
+    /// Error that indicates a payment can't be executed because there are no approved assets
+    NoApprovedAssets = 5,
 }
