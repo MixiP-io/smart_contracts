@@ -17,4 +17,6 @@ pub enum ContractError {
     AssetsNotFound = 4,
     /// Error that indicates a payment can't be executed because there are no approved assets
     NoApprovedAssets = 5,
+    /// Error that indicates the contract wasn't already initialized
+    NotInitialized = 6,
 }

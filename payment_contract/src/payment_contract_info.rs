@@ -68,6 +68,10 @@ pub(crate) fn write_contract_info(env: &Env, contract_info: &PaymentContractInfo
     env.storage().set(&CONTRACT_INFO_KEY, contract_info);
 }
 
+pub(crate) fn get_contract_info(env: &Env) -> PaymentContractInfo {
+    env.storage().get_unchecked(&CONTRACT_INFO_KEY).unwrap()
+}
+
 pub(crate) fn write_creator(env: &Env, partner: &Address) {
     env.storage().set(&AUTH_PARTNER_KEY, partner)
 }
