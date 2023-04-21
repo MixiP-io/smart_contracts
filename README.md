@@ -14,9 +14,7 @@ With Soroban we want to build out an underlying structure for IP rights at the a
 ## Current System overview
 The following image illustrates how the smart contract manage the assets payment process. 
 
-
-![MixIp payment process](https://user-images.githubusercontent.com/62166813/233652783-93834f36-c4a6-4f48-b3c2-eaf60eee062c.png)
-
+![MixIp payments contract](https://user-images.githubusercontent.com/62166813/233655918-fc704e24-bba0-47bc-b3f9-e04a71841330.png)
 
 ## Changelog
 
