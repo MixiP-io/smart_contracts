@@ -14,11 +14,15 @@ With Soroban we want to build out an underlying structure for IP rights at the a
 
 ## Current System overview
 The following image illustrates how the smart contract manage the assets payment process.
+![MixiP SmartContracts - Workflow](https://user-images.githubusercontent.com/39246879/233684620-118ab375-3957-4bea-a698-4b0a4ad76056.jpeg)
 
-![MixIp payments contract](https://user-images.githubusercontent.com/62166813/233655918-fc704e24-bba0-47bc-b3f9-e04a71841330.png)
+## License
+
+This project is licensed under a GNU AGPLv3 license. See [LICENSE][license] for details.
 
 ## Changelog
 
 Features and bug fixes are listed in the [CHANGELOG][changelog] file.
 
+[license]: https://github.com/MixiP-io/smart_contracts/blob/main/LICENSE
 [changelog]: https://github.com/MixiP-io/smart_contracts/blob/main/CHANGELOG.md
