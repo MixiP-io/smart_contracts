@@ -1,6 +1,6 @@
 # MixiP Smart Contracts
 
-![Version Badge](https://img.shields.io/badge/VERSION-v0.2.0-blue?style=for-the-badge)
+![Release Badge](https://img.shields.io/badge/Release-v0.2.0-blue)
 [![Smart Contract Build & Test](https://github.com/MixiP-io/smart_contracts/actions/workflows/ci.yaml/badge.svg)](https://github.com/MixiP-io/smart_contracts/actions/workflows/ci.yaml)
 
 ## Project Motivation
