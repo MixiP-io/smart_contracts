@@ -1,6 +1,7 @@
 # MixiP Smart Contracts
 
 ![Version Badge](https://img.shields.io/badge/VERSION-v0.2.0-blue?style=for-the-badge)
+[![Smart Contract Build & Test](https://github.com/MixiP-io/smart_contracts/actions/workflows/ci.yaml/badge.svg)](https://github.com/MixiP-io/smart_contracts/actions/workflows/ci.yaml)
 
 ## Project Motivation
 
@@ -12,7 +13,7 @@ Soroban is an ideal solution for our business as it allows us to automate paymen
 With Soroban we want to build out an underlying structure for IP rights at the asset level. The media asset information is recorded in a smart contract, which owner is the creative, so even if the media asset is delivered there is always a record in the blockchain of who is its author. In this way, we can ensure that our creatives' work is properly protected.
 
 ## Current System overview
-The following image illustrates how the smart contract manage the assets payment process. 
+The following image illustrates how the smart contract manage the assets payment process.
 
 ![MixIp payments contract](https://user-images.githubusercontent.com/62166813/233655918-fc704e24-bba0-47bc-b3f9-e04a71841330.png)
 
