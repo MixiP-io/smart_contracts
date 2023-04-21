@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 (21.04.2023)
+
+- [Add license](https://github.com/MixiP-io/smart_contracts/pull/28)
+
 ## 0.2.0 (21.04.2023)
 
 - [Payment contract](https://github.com/MixiP-io/smart_contracts/milestone/1)
